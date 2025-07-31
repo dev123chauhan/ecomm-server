@@ -35,10 +35,8 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.get('*',(req,res,next)=>{
-  res.status(200).json({
-    message:'bad request'
-  })
-})
+app.get('*', (req, res) => {
+  res.status(200).json({ message: 'bad request' });
+});
 
 module.exports = app;
