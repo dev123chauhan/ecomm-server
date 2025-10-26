@@ -79,6 +79,58 @@ const cartController = {
       res.status(500).json({ message: error.message });
     }
   },
+
+  updateQuantity: async (req, res) => {
+    try {
+      const { userId, productId } = req.params;
+      const { action } = req.body; // 'increase' or 'decrease'
+
+      const cart = await Cart.findOne({ userId });
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+
+      const item = cart.items.find(
+        (item) => item.productId && item.productId.toString() === productId
+      );
+
+      if (!item) {
+        return res.status(404).json({ message: "Item not found in cart" });
+      }
+
+      if (action === "increase") {
+        item.quantity += 1;
+      } else if (action === "decrease") {
+        if (item.quantity > 1) {
+          item.quantity -= 1;
+        } else {
+          // If quantity becomes 0, remove the item
+          const itemIndex = cart.items.findIndex(
+            (i) => i.productId && i.productId.toString() === productId
+          );
+          cart.items.splice(itemIndex, 1);
+        }
+      } else {
+        return res.status(400).json({ message: "Invalid action" });
+      }
+
+      // Update total price for the item
+      if (item.quantity > 0) {
+        item.totalPrice = item.quantity * item.price;
+      }
+
+      // Recalculate cart total
+      cart.totalAmount = cart.items.reduce(
+        (total, item) => total + item.totalPrice,
+        0
+      );
+
+      await cart.save();
+      res.json(cart);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
 };
 
 module.exports = cartController;
