@@ -1,18 +1,46 @@
 const mongoose = require('mongoose');
 
 const wishlistSchema = new mongoose.Schema({
-  userId: {
+  userId: { 
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product' 
+    required: true
+  },
+
+  productType: {
+    type: String,
+    required: true,
+    enum: ['Product', 'Shop', 'ExploreProduct']
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now 
   }
 });
 
+
+wishlistSchema.index({ userId: 1, productId: 1, productType: 1 }, { unique: true });
+
 module.exports = mongoose.model('Wishlist', wishlistSchema);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

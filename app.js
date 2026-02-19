@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/database');
+const errorMiddleware = require('./middleware/errorMiddleware');
 const productRoutes = require('./api/routes/productRoutes');
 const exploreProductRoutes = require('./api/routes/exploreProductRoutes');
 const userRoutes = require('./api/routes/userRoutes');
@@ -34,7 +35,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/orders', orderRoutes);
-
+app.use(errorMiddleware);
 app.get('*', (req, res) => {
   res.status(200).json({ message: 'bad request' });
 });
